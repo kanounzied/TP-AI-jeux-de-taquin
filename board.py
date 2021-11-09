@@ -16,7 +16,6 @@ class Board:
         np.random.shuffle(tab)
 
         while not self.is_solvable(tab):
-            # print('test inside while')
             np.random.shuffle(tab)
 
         inter_matrix = tab.reshape(size, size)

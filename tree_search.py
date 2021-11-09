@@ -24,7 +24,21 @@ class TreeSearch:
         return self.queue
 
     def dfs_search(self, node: Node):
+
         print("board: ", node.board.state.isFinal)
+        stack = [node]
+        self.used_states[node.board.state.state_matrix_id_gen()] = True
+        while len(stack) and not node.board.state.isFinal:
+            node = stack[-1]
+            node.board.afficher_pieces()
+            stack.pop()
+            if(self.used_states.get(node.board.state.state_matrix_id_gen())) is None:
+                self.used_states[node.board.state.state_matrix_id_gen()] = True
+
+            for n in [node.left, node.right, node.up, node.down]:
+                if(self.used_states.get(n.board.state.state_matrix_id_gen())) is None:
+                    stack.append(n)
+
         node.board.afficher_pieces()
         if node.board.state.isFinal:
             print("---------------------------------final state is found!")
@@ -32,7 +46,7 @@ class TreeSearch:
         else:
             children = self.remove_redondant_nodes(node)
             found = False
-            while not found and len(children) != 0:
+            while not found and len(children) > 0:
                 found = self.dfs_search(children.pop(0))
             return found
 
