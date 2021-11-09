@@ -1,4 +1,0 @@
-numpy
-__future__
-abc
-sympy.combinatorics.permutations

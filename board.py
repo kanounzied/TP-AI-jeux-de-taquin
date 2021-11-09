@@ -6,24 +6,32 @@ from abc import ABC, abstractmethod
 from directions import Directions
 from sympy.combinatorics.permutations import Permutation
 
+
 class Board:
     state = None
 
-    def __init__(self, size: int):
+    def __init__(self, size: int, matrix=None, state=None):
+
         self.size = size
         self.matrix = np.empty((size, size), dtype=Piece)
-        tab = np.array(range(size * size))
-        np.random.shuffle(tab)
 
-        while not self.is_solvable(tab):
-            # print('test inside while')
+        if matrix is None:
+            tab = np.array(range(size * size))
             np.random.shuffle(tab)
 
-        inter_matrix = tab.reshape(size, size)
-        for i in range(size):
-            for j in range(size):
-                self.matrix[i][j] = Piece((i, j), inter_matrix[i][j], self.size)
-        self.transition_to(StateInitial())
+            while not self.is_solvable(tab):
+                np.random.shuffle(tab)
+
+            inter_matrix = tab.reshape(size, size)
+            for i in range(size):
+                for j in range(size):
+                    self.matrix[i][j] = Piece((i, j), inter_matrix[i][j], self.size)
+            self.transition_to(StateInitial())
+        else:
+            for i in range(size):
+                for j in range(size):
+                    self.matrix[i][j] = Piece((i, j), matrix[i][j], self.size)
+            self.transition_to(StateInitial())
 
     def is_solvable(self, tab: np.array) -> bool:
         permutation_parity = Permutation(tab).signature()
@@ -73,6 +81,10 @@ class Board:
         for i in range(self.size):
             print([j.value for j in self.matrix[i]])
 
+    def get_matrix_numbers(self):
+        return [[i.value for i in j] for j in self.matrix]
+    #
+    # in (np.asarray(self.matrix)).flatten()
     def transition_to(self, state: State):
         self.state = state
         self.state.context = self
@@ -89,16 +101,18 @@ class State(ABC):
     def context(self, context: Board) -> None:
         self._context = context
         arr = [i.value for i in (np.asarray(context.matrix)).flatten()]
+
         self.isFinal = np.array_equal(arr, range(context.size * context.size))
+
         self.empty_position = self.context.find_empty_piece()
         self.left_position = (
-        self.empty_position[0] + Directions.Left.value[0], self.empty_position[1] + Directions.Left.value[1])
+            self.empty_position[0] + Directions.Left.value[0], self.empty_position[1] + Directions.Left.value[1])
         self.right_position = (
             self.empty_position[0] + Directions.Right.value[0], self.empty_position[1] + Directions.Right.value[1])
         self.up_position = (
-        self.empty_position[0] + Directions.Up.value[0], self.empty_position[1] + Directions.Up.value[1])
+            self.empty_position[0] + Directions.Up.value[0], self.empty_position[1] + Directions.Up.value[1])
         self.down_position = (
-        self.empty_position[0] + Directions.Down.value[0], self.empty_position[1] + Directions.Down.value[1])
+            self.empty_position[0] + Directions.Down.value[0], self.empty_position[1] + Directions.Down.value[1])
 
     @abstractmethod
     def handle_up(self) -> None:

@@ -10,8 +10,8 @@ if __name__ == '__main__':
     board.afficher_pieces()
     node = Node(board)
     tree_search = TreeSearch()
-    print("** BFS Tree Search **")
-    output = tree_search.bfs_search(node)
+    # print("** BFS Tree Search **")
+    # output = tree_search.bfs_search(node)
 
-    # print("** DFS Tree Search **")
-    # output2 = tree_search.dfs_search(node)
+    print("** DFS Tree Search **")
+    output2 = tree_search.dfs_search(node)
