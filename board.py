@@ -10,7 +10,7 @@ from sympy.combinatorics.permutations import Permutation
 class Board:
     state = None
 
-    def __init__(self, size: int, matrix=None, state=None):
+    def __init__(self, size: int):
 
         self.size = size
         self.matrix = np.empty((size, size), dtype=Piece)
