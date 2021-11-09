@@ -15,23 +15,16 @@ class Board:
         self.size = size
         self.matrix = np.empty((size, size), dtype=Piece)
 
-        if matrix is None:
-            tab = np.array(range(size * size))
+        tab = np.array(range(size * size))
+        np.random.shuffle(tab)
+        while not self.is_solvable(tab):
             np.random.shuffle(tab)
+        inter_matrix = tab.reshape(size, size)
+        for i in range(size):
+            for j in range(size):
+                self.matrix[i][j] = Piece((i, j), inter_matrix[i][j], self.size)
+        self.transition_to(StateInitial())
 
-            while not self.is_solvable(tab):
-                np.random.shuffle(tab)
-
-            inter_matrix = tab.reshape(size, size)
-            for i in range(size):
-                for j in range(size):
-                    self.matrix[i][j] = Piece((i, j), inter_matrix[i][j], self.size)
-            self.transition_to(StateInitial())
-        else:
-            for i in range(size):
-                for j in range(size):
-                    self.matrix[i][j] = Piece((i, j), matrix[i][j], self.size)
-            self.transition_to(StateInitial())
 
     def is_solvable(self, tab: np.array) -> bool:
         permutation_parity = Permutation(tab).signature()
@@ -83,8 +76,7 @@ class Board:
 
     def get_matrix_numbers(self):
         return [[i.value for i in j] for j in self.matrix]
-    #
-    # in (np.asarray(self.matrix)).flatten()
+
     def transition_to(self, state: State):
         self.state = state
         self.state.context = self

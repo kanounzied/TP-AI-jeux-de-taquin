@@ -1,5 +1,4 @@
 from board import Board
-import numpy as np
 import copy
 
 
@@ -15,9 +14,7 @@ class Node:
     @property
     def up(self):
         if self._up is None:
-            new_board = Board(self.board.size, self.board.get_matrix_numbers(), self.board.state)
-            new_board.state.context = new_board
-            # new_board = copy.deepcopy(self.board)
+            new_board = copy.deepcopy(self.board)
             new_board.move_up()
             self._up = Node(new_board)
         return self._up
@@ -25,9 +22,7 @@ class Node:
     @property
     def down(self):
         if self._down is None:
-            new_board = Board(self.board.size, self.board.get_matrix_numbers(), self.board.state)
-            new_board.state.context = new_board
-            # new_board = copy.deepcopy(self.board)
+            new_board = copy.deepcopy(self.board)
             new_board.move_down()
             self._down = Node(new_board)
         return self._down
@@ -35,9 +30,7 @@ class Node:
     @property
     def left(self):
         if self._left is None:
-            new_board = Board(self.board.size, self.board.get_matrix_numbers(), self.board.state)
-            new_board.state.context = new_board
-            # new_board = copy.deepcopy(self.board)
+            new_board = copy.deepcopy(self.board)
             new_board.move_left()
             self._left = Node(new_board)
         return self._left
@@ -45,9 +38,7 @@ class Node:
     @property
     def right(self):
         if self._right is None:
-            new_board = Board(self.board.size, self.board.get_matrix_numbers(), self.board.state)
-            new_board.state.context = new_board
-            # new_board = copy.deepcopy(self.board)
+            new_board = copy.deepcopy(self.board)
             new_board.move_right()
             self._right = Node(new_board)
         return self._right
