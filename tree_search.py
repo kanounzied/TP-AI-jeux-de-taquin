@@ -31,6 +31,9 @@ class TreeSearch:
         return self.open
 
     def dfs_search(self, node: Node):
+
+        #========  5edmet zied
+
         self.closed[node.board.state.state_matrix_id_gen()] = "root"
         self.open = np.append(self.open, [
             {
@@ -52,6 +55,8 @@ class TreeSearch:
         self.find_solution_path()
         self.closed = {}
         return self.open
+
+        #===========  5edmet grati
 
         # print("board: ", node.board.state.isFinal)
         # stack = [node]
