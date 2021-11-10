@@ -2,13 +2,14 @@ from node import Node
 import numpy as np
 import math
 
+
 class TreeSearch:
     open = np.array([])
     closed = {}
 
     def bfs_search(self, node: Node):
         self.closed[node.board.state.state_matrix_id_gen()] = "root"
-        self.open = np.append(self.open, [
+        self.open = np.array([
             {
                 "parent": "tree",
                 "node": node
@@ -32,10 +33,10 @@ class TreeSearch:
 
     def dfs_search(self, node: Node):
 
-        #========  5edmet zied
+        # ========  5edmet zied
 
         self.closed[node.board.state.state_matrix_id_gen()] = "root"
-        self.open = np.append(self.open, [
+        self.open = np.array([
             {
                 "parent": "tree",
                 "node": node
@@ -56,7 +57,7 @@ class TreeSearch:
         self.closed = {}
         return self.open
 
-        #===========  5edmet grati
+        # ===========  5edmet grati
 
         # print("board: ", node.board.state.isFinal)
         # stack = [node]
@@ -88,12 +89,35 @@ class TreeSearch:
 
     def dfs_iterative_search(self, node: Node):
         level = 0
-        self.open[0].append({
-                "level": level,
-                "node": node
-            })
-        # while self.open[-1]["level"] <= level:
-        #     print("salem")
+        self.closed[node.board.state.state_matrix_id_gen()] = "root"
+        self.open = np.array([{
+            "level": level,
+            "node": node,
+            "parent": "root"
+        }])
+        index = 0
+        while not self.open[index]["node"].board.state.isFinal:
+            print("============== level: ", level, " =================")
+            index = 0
+            children = self.get_leveled_children(self.open[index])
+            self.open = np.append(children, self.open)
+
+            while self.open[-1]["node"] != self.open[index]["node"]:  # index != len(self.open)
+                self.open[index]["node"].board.afficher_pieces()
+                head = self.open[index]
+                if head["node"].board.state.isFinal:
+                    break
+                if head["level"] < level:
+                    children = self.get_leveled_children(head)
+                    self.open = np.delete(self.open, index)
+                    self.open = np.insert(self.open, index, children)
+                else:
+                    index += 1
+            print("break in while!!!!")
+            level += 1
+        self.find_solution_path(index)
+        self.closed = {}
+        return self.open
 
     def remove_redondant_nodes(self, head: Node):
         nodes = [head.left, head.right, head.up, head.down]
@@ -109,6 +133,20 @@ class TreeSearch:
                 self.closed[node.board.state.state_matrix_id_gen()] = head.board.state.state_matrix_id_gen()
         return final_list
 
+    def get_leveled_children(self, head):
+        nodes = [head["node"].left, head["node"].right, head["node"].up, head["node"].down]
+        final_list = []
+        for node in nodes:
+            if self.closed.get(node.board.state.state_matrix_id_gen()) is None:
+                final_list.append(
+                    {
+                        "parent": head["node"].board.state.state_matrix_id_gen(),
+                        "level": head["level"] + 1,
+                        "node": node
+                    }
+                )
+                self.closed[node.board.state.state_matrix_id_gen()] = head["node"].board.state.state_matrix_id_gen()
+        return final_list
 
     def remove_redondant_nodes_safe_copy(self, head: Node):
         nodes = [head.left, head.right, head.up, head.down]
@@ -119,9 +157,9 @@ class TreeSearch:
                 self.closed[i.board.state.state_matrix_id_gen()] = True
         return final_list
 
-    def find_solution_path(self):
-        parent = self.open[0]["parent"]
-        solution_path = np.array([self.open[0]["node"].board.state.state_matrix_id_gen()])
+    def find_solution_path(self, index=0):
+        parent = self.open[index]["parent"]
+        solution_path = np.array([self.open[index]["node"].board.state.state_matrix_id_gen()])
         while parent != "root":
             solution_path = np.append(parent, solution_path)
             parent = self.closed[parent]
@@ -146,4 +184,3 @@ class TreeSearch:
         table = [fmt.format(*row) for row in s]
         print('--------')
         print('\n'.join(table))
-
