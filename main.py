@@ -4,7 +4,9 @@ from tree_search import TreeSearch
 
 if __name__ == '__main__':
     print("============ Jeu De Taquin ============")
-    n = input("donner la dimension du Taquin: ")
+    n = ""
+    while not n:
+        n = input("donner la dimension du Taquin: ")
     board = Board(int(n))
     board.afficher_pieces()
     node = Node(board)
