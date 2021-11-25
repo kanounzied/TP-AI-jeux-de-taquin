@@ -23,5 +23,5 @@ if __name__ == '__main__':
     # print("** DFS Iterative Tree Search **")
     # output3 = tree_search.dfs_iterative_search(node)
 
-    print("** A* search **")
-    output4 = tree_search.a_etoile(node)
+    # print("** A* search **")
+    # output4 = tree_search.a_etoile(node)

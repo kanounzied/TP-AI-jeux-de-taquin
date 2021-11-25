@@ -263,3 +263,14 @@ class TreeSearch:
             for j in range(size):
                 sum += abs(self.goal_dict[matrix[i][j]][0] - i) + abs(self.goal_dict[matrix[i][j]][1] - j)
         return sum
+
+    def missplaced_pieces_heuristic(self, matrix):
+        sum = 0
+        size = int(len(matrix))
+        for i in range(size):
+            for j in range(size):
+                piece = matrix[i][j]
+                # compare x coordinates and y coordinates
+                if self.goal_dict.get(piece)[0] != i or self.goal_dict.get(piece)[1] != j:
+                    sum += 1
+        return sum
