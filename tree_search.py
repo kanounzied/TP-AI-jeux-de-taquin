@@ -191,6 +191,7 @@ class TreeSearch:
         print("solution found in ", len(solution_path), " steps!")
         for sol in solution_path:
             self.string_to_matrix(sol)
+        return len(solution_path)
 
     def string_to_matrix(self, s):
         size = int(math.sqrt(len(s)))
@@ -209,9 +210,9 @@ class TreeSearch:
         print('\n'.join(table))
 
     # we suppose all costs are = 1 so f(n) = h(n)
-    def a_etoile(self, node: Node):
+    def a_etoile(self, node: Node, heuristic):
         self.closed = {node.board.state.state_matrix_id_gen(): "root"}
-        heuristique_min = self.heuristique_mahattan(node.board.get_matrix_numbers())
+        heuristique_min = heuristic(node.board.get_matrix_numbers())
         self.open = {
             heuristique_min: np.array([
                 {
@@ -249,12 +250,12 @@ class TreeSearch:
                     heuristique_min += 1
                     print(heuristique_min)
         print("taquin solved: ")
-        self.find_solution_path(
+        number_of_made_moves = self.find_solution_path(
             parent_id=self.open[heuristique_min][0]["parent"],
             solution_node=self.open[heuristique_min][0]["node"]
         )
         self.closed = {}
-        return open
+        return number_of_made_moves
 
     def heuristique_mahattan(self, matrix):
         sum = 0
