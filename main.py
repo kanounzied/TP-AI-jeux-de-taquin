@@ -20,9 +20,9 @@ def plot_comparison_results(mahattan_results, miss_placed_pieces_results):
     ax.plot(comp_df['number_of_essay'], comp_df['miss_placed_pieces_heuristic'], label="Miss Placed Pieces Heuristic",
             marker='o', linewidth=2
             )
-
     ax.set_xlabel('Number Of Essay')
     ax.set_ylabel('Number of Moves')
+    plt.title('Comparison Between Mahattan and Miss Placed Pieces Heuristics')
     plt.legend()
     plt.savefig('./comp.png')
     plt.show()
