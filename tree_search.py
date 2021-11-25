@@ -33,9 +33,9 @@ class TreeSearch:
             head = self.open[0]["node"]
             print("board: ")
             head.board.afficher_pieces()
-            if head.board.state.isFinal:
-                break
-            direction_states = self.remove_redondant_nodes(head)
+            # if head.board.state.isFinal:
+            #     break
+            direction_states = self.remove_redondant_nodes(head) # children array
             self.open = np.delete(self.open, 0)
             self.open = np.append(self.open, direction_states)
         print("taquin solved: ")
@@ -60,8 +60,8 @@ class TreeSearch:
             head = self.open[0]["node"]
             print("board: ")
             head.board.afficher_pieces()
-            if head.board.state.isFinal:
-                break
+            # if head.board.state.isFinal:
+            #     break
             direction_states = self.remove_redondant_nodes(head)
             self.open = np.delete(self.open, 0)
             self.open = np.append(direction_states, self.open)
@@ -216,7 +216,8 @@ class TreeSearch:
             heuristique_min: np.array([
                 {
                     "parent": "tree",
-                    "node": node
+                    "node": node,
+                    "cost": 0
                 }
             ])
         }
@@ -242,12 +243,11 @@ class TreeSearch:
                         self.open[heuristique_child],
                         child,
                     )
-                print("heuristique in open: ", heuristique_child)
                 if heuristique_child < heuristique_min:
                     heuristique_min = heuristique_child
-                while heuristique_min not in self.open:
-                    heuristique_min += 1
-                    print(heuristique_min)
+            while heuristique_min not in self.open:
+                heuristique_min += 1
+                print(heuristique_min)
         print("taquin solved: ")
         self.find_solution_path(
             parent_id=self.open[heuristique_min][0]["parent"],

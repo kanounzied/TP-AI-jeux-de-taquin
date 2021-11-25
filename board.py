@@ -15,6 +15,7 @@ class Board:
         self.size = size
         self.matrix = np.empty((size, size), dtype=Piece)
 
+        # tab = np.array([3, 1, 2, 4, 5, 0, 6, 7, 8])
         tab = np.array(range(size * size))
         np.random.shuffle(tab)
         while not self.is_solvable(tab):
@@ -24,7 +25,6 @@ class Board:
             for j in range(size):
                 self.matrix[i][j] = Piece((i, j), inter_matrix[i][j], self.size)
         self.transition_to(StateInitial())
-
 
     def is_solvable(self, tab: np.array) -> bool:
         permutation_parity = Permutation(tab).signature()
