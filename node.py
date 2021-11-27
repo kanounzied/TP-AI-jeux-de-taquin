@@ -10,6 +10,7 @@ class Node:
         self._down = None
         self._left = None
         self._right = None
+        self.cost = 0
 
     @property
     def up(self):
