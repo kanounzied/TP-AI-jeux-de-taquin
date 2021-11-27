@@ -15,6 +15,12 @@ class TreeSearch:
     open = np.array([])
     closed = {}
     goal_dict = {}
+    algorithms_result = {
+        "bfs": 0,
+        "dfs": 0,
+        "iterative-dfs": 0,
+        "a-etoile": 0
+    }
 
     def __init__(self, size: int):
         for i in range(size * size):
@@ -35,12 +41,12 @@ class TreeSearch:
             head.board.afficher_pieces()
             # if head.board.state.isFinal:
             #     break
-            direction_states = self.remove_redondant_nodes(head) # children array
+            direction_states = self.remove_redondant_nodes(head)  # children array
             self.open = np.delete(self.open, 0)
             self.open = np.append(self.open, direction_states)
         print("taquin solved: ")
         # self.open[0]["node"].board.afficher_pieces()
-        self.find_solution_path()
+        self.find_solution_path(algo="bfs")
         self.closed = {}
         return self.open
 
@@ -66,7 +72,7 @@ class TreeSearch:
             self.open = np.delete(self.open, 0)
             self.open = np.append(direction_states, self.open)
         print("taquin solved: ")
-        self.find_solution_path()
+        self.find_solution_path(algo="dfs")
         self.closed = {}
         return self.open
 
@@ -128,7 +134,7 @@ class TreeSearch:
                     index += 1
             print("break in while!!!!")
             level += 1
-        self.find_solution_path(index)
+        self.find_solution_path(index, algo="iterative-dfs")
         self.closed = {}
         return self.open
 
@@ -137,6 +143,7 @@ class TreeSearch:
         final_list = []
         for node in nodes:
             if self.closed.get(node.board.state.state_matrix_id_gen()) is None:
+                node.cost += 1 + head.cost
                 final_list.append(
                     {
                         "parent": head.board.state.state_matrix_id_gen(),
@@ -172,7 +179,7 @@ class TreeSearch:
                 self.closed[i.board.state.state_matrix_id_gen()] = True
         return final_list
 
-    def find_solution_path(self, index=0, parent_id="", solution_node=None):
+    def find_solution_path(self, index=0, parent_id="", solution_node=None, algo=""):
         # parent id
         if parent_id == "":
             parent = self.open[index]["parent"]
@@ -189,6 +196,7 @@ class TreeSearch:
 
         # solution_path = np.append(parent, solution_path)
         print("solution found in ", len(solution_path), " steps!")
+        self.algorithms_result[algo] = len(solution_path)
         for sol in solution_path:
             self.string_to_matrix(sol)
 
@@ -211,47 +219,48 @@ class TreeSearch:
     # we suppose all costs are = 1 so f(n) = h(n)
     def a_etoile(self, node: Node):
         self.closed = {node.board.state.state_matrix_id_gen(): "root"}
-        heuristique_min = self.heuristique_mahattan(node.board.get_matrix_numbers())
+        indice_min = self.heuristique_mahattan(node.board.get_matrix_numbers())
+        node.cost = 1
         self.open = {
-            heuristique_min: np.array([
+            indice_min: np.array([
                 {
                     "parent": "tree",
-                    "node": node,
-                    "cost": 0
+                    "node": node
                 }
             ])
         }
-        while not self.open[heuristique_min][0]["node"].board.state.isFinal:
-            head = self.open[heuristique_min][0]["node"]
+        while not self.open[indice_min][0]["node"].board.state.isFinal:
+            head = self.open[indice_min][0]["node"]
             print("board: ")
             head.board.afficher_pieces()
             if head.board.state.isFinal:
                 break
             direction_states = self.remove_redondant_nodes(head)
 
-            if len(self.open[heuristique_min]) == 1:
-                self.open.pop(heuristique_min)
+            if len(self.open[indice_min]) == 1:
+                self.open.pop(indice_min)
             else:
-                self.open[heuristique_min] = np.delete(self.open[heuristique_min], 0)
+                self.open[indice_min] = np.delete(self.open[indice_min], 0)
 
             for child in direction_states:
-                heuristique_child = self.heuristique_mahattan(child["node"].board.get_matrix_numbers())
-                if heuristique_child not in self.open:
-                    self.open[heuristique_child] = np.array([])
-                self.open[heuristique_child] = \
+                indice_child = self.heuristique_mahattan(child["node"].board.get_matrix_numbers()) + child["node"].cost
+                if indice_child not in self.open:
+                    self.open[indice_child] = np.array([])
+                self.open[indice_child] = \
                     np.append(
-                        self.open[heuristique_child],
+                        self.open[indice_child],
                         child,
                     )
-                if heuristique_child < heuristique_min:
-                    heuristique_min = heuristique_child
-            while heuristique_min not in self.open:
-                heuristique_min += 1
-                print(heuristique_min)
+                if indice_child < indice_min:
+                    indice_min = indice_child
+            while indice_min not in self.open:
+                indice_min += 1
+                print(indice_min)
         print("taquin solved: ")
         self.find_solution_path(
-            parent_id=self.open[heuristique_min][0]["parent"],
-            solution_node=self.open[heuristique_min][0]["node"]
+            parent_id=self.open[indice_min][0]["parent"],
+            solution_node=self.open[indice_min][0]["node"],
+            algo="a-etoile"
         )
         self.closed = {}
         return open
