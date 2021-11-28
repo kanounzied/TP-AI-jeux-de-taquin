@@ -200,6 +200,8 @@ class TreeSearch:
         for sol in solution_path:
             self.string_to_matrix(sol)
 
+        return solution_path
+
     def string_to_matrix(self, s):
         size = int(math.sqrt(len(s)))
         matrix = np.empty((size, size), dtype=str)
@@ -217,9 +219,9 @@ class TreeSearch:
         print('\n'.join(table))
 
     # we suppose all costs are = 1 so f(n) = h(n)
-    def a_etoile(self, node: Node):
+    def a_etoile(self, node: Node, heuristique):
         self.closed = {node.board.state.state_matrix_id_gen(): "root"}
-        indice_min = self.heuristique_mahattan(node.board.get_matrix_numbers())
+        indice_min = heuristique(node.board.get_matrix_numbers())
         node.cost = 1
         self.open = {
             indice_min: np.array([
@@ -243,7 +245,7 @@ class TreeSearch:
                 self.open[indice_min] = np.delete(self.open[indice_min], 0)
 
             for child in direction_states:
-                indice_child = self.heuristique_mahattan(child["node"].board.get_matrix_numbers()) + child["node"].cost
+                indice_child = heuristique(child["node"].board.get_matrix_numbers()) + child["node"].cost
                 if indice_child not in self.open:
                     self.open[indice_child] = np.array([])
                 self.open[indice_child] = \
@@ -257,13 +259,13 @@ class TreeSearch:
                 indice_min += 1
                 print(indice_min)
         print("taquin solved: ")
-        self.find_solution_path(
+        solution_path = self.find_solution_path(
             parent_id=self.open[indice_min][0]["parent"],
             solution_node=self.open[indice_min][0]["node"],
             algo="a-etoile"
         )
         self.closed = {}
-        return open
+        return solution_path
 
     def heuristique_mahattan(self, matrix):
         sum = 0
@@ -283,3 +285,31 @@ class TreeSearch:
                 if self.goal_dict.get(piece)[0] != i or self.goal_dict.get(piece)[1] != j:
                     sum += 1
         return sum
+
+    def a_etoile_compare(self, node: Node):
+        solution1 = self.a_etoile(node, heuristique=self.missplaced_pieces_heuristic)
+        res = self.algorithms_result["a-etoile"]
+        solution2 = self.a_etoile(node, heuristique=self.heuristique_mahattan)
+
+        print("heuristique places erronées solution length: ")
+        print(res)
+        # for str in solution1:
+        #     print(self.string_to_matrix(str))
+        print("==============================================")
+
+        print("heuristique manhattan solution length: ")
+        print(self.algorithms_result["a-etoile"])
+        # for str in solution2:
+        #     print(self.string_to_matrix(str))
+
+    def compare_algorithms(self):
+        min = self.algorithms_result["bfs"]
+        opt_name = "bfs"
+        for key in self.algorithms_result:
+            if self.algorithms_result[key] <= min:
+                min = self.algorithms_result[key]
+                opt_name = key
+            print("algorithm ", key, " found solution in", self.algorithms_result[key], "steps")
+
+        print("====================================================")
+        print(opt_name, " is the optimal algorithm.")
