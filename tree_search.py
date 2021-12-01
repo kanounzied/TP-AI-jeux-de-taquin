@@ -235,7 +235,7 @@ class TreeSearch:
                 self.open[heuristique_min] = np.delete(self.open[heuristique_min], 0)
 
             for child in direction_states:
-                heuristique_child = self.heuristique_mahattan(child["node"].board.get_matrix_numbers())
+                heuristique_child = heuristic(child["node"].board.get_matrix_numbers())
                 if heuristique_child not in self.open:
                     self.open[heuristique_child] = np.array([])
                 self.open[heuristique_child] = \

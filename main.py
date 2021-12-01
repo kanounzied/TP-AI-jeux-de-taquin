@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 
 def plot_comparison_results(mahattan_results, miss_placed_pieces_results):
     comp_list = [[mahattan_results[i], miss_placed_pieces_results[i]] for i in range(len(mahattan_results))]
-    print(comp_list)
     comp_df = pd.DataFrame(comp_list, columns=['mahattan_heuristic', 'miss_placed_pieces_heuristic'])
     comp_df['number_of_essay'] = comp_df.index
 
@@ -41,7 +40,8 @@ def execute_and_compare_heuristics():
         print("** A* search (Miss Placed Pieces Heuristic) **")
         miss_placed_pieces_results.append(tree_search.a_etoile(node, tree_search.missplaced_pieces_heuristic))
 
-    plot_comparison_results(mahattan_results, miss_placed_pieces_results)
+    print(mahattan_results)
+    # plot_comparison_results(mahattan_results, miss_placed_pieces_results)
 
 
 
@@ -71,4 +71,6 @@ if __name__ == '__main__':
         print("** DFS Iterative Tree Search **")
         output3 = tree_search.dfs_iterative_search(node)
     if algo_to_execute == 4:
-        execute_and_compare_heuristics()
+        # execute_and_compare_heuristics()
+        print(node.board.get_matrix_numbers())
+        print(tree_search.heuristique_mahattan(node.board.get_matrix_numbers()))
