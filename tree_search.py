@@ -200,7 +200,7 @@ class TreeSearch:
         for sol in solution_path:
             self.string_to_matrix(sol)
 
-        return solution_path
+        return len(solution_path)
 
     def string_to_matrix(self, s):
         size = int(math.sqrt(len(s)))
@@ -259,13 +259,13 @@ class TreeSearch:
                 indice_min += 1
                 print(indice_min)
         print("taquin solved: ")
-        solution_path = self.find_solution_path(
+        solution_path_length = self.find_solution_path(
             parent_id=self.open[indice_min][0]["parent"],
             solution_node=self.open[indice_min][0]["node"],
             algo="a-etoile"
         )
         self.closed = {}
-        return solution_path
+        return solution_path_length
 
     def heuristique_mahattan(self, matrix):
         sum = 0
