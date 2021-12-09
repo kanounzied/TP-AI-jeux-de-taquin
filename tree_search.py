@@ -27,6 +27,7 @@ class TreeSearch:
             self.goal_dict[i] = get_value_coordinates_in_goal(i, size)
 
     def bfs_search(self, node: Node):
+        self.closed = {}
         self.closed[node.board.state.state_matrix_id_gen()] = "root"
         self.open = np.array([
             {
@@ -46,12 +47,11 @@ class TreeSearch:
             self.open = np.append(self.open, direction_states)
         print("taquin solved: ")
         # self.open[0]["node"].board.afficher_pieces()
-        self.find_solution_path(algo="bfs")
-        self.closed = {}
-        return self.open
+        solution_path_length = self.find_solution_path(algo="bfs")
+        return solution_path_length
 
     def dfs_search(self, node: Node):
-
+        self.closed = {}
         # ========  5edmet zied
 
         self.closed[node.board.state.state_matrix_id_gen()] = "root"
@@ -72,41 +72,12 @@ class TreeSearch:
             self.open = np.delete(self.open, 0)
             self.open = np.append(direction_states, self.open)
         print("taquin solved: ")
-        self.find_solution_path(algo="dfs")
-        self.closed = {}
-        return self.open
+        solution_path_length = self.find_solution_path(algo="dfs")
+        return solution_path_length
 
-        # ===========  5edmet grati
-
-        # print("board: ", node.board.state.isFinal)
-        # stack = [node]
-        # self.closed[node.board.state.state_matrix_id_gen()] = True
-        # while len(stack) and not node.board.state.isFinal:
-        #     node = stack[-1]
-        #     node.board.afficher_pieces()
-        #     stack.pop()
-        #     if (self.closed.get(node.board.state.state_matrix_id_gen())) is None:
-        #         self.closed[node.board.state.state_matrix_id_gen()] = True
-        #
-        #     for n in [node.left, node.right, node.up, node.down]:
-        #         if (self.closed.get(n.board.state.state_matrix_id_gen())) is None:
-        #             stack.append(n)
-        #
-        # node.board.afficher_pieces()
-        # if node.board.state.isFinal:
-        #     print("---------------------------------final state is found!")
-        #     self.closed = {}
-        #     return True
-        # else:
-        #     children = self.remove_redondant_nodes(node)
-        #     found = False
-        #     while not found and len(children) > 0:
-        #         found = self.dfs_search(children.pop(0))
-        #     if found is True :
-        #         self.closed = {}
-        #     return found
 
     def dfs_iterative_search(self, node: Node):
+        self.closed = {}
         level = 0
         self.closed[node.board.state.state_matrix_id_gen()] = "root"
         self.open = np.array([{
@@ -134,9 +105,8 @@ class TreeSearch:
                     index += 1
             print("break in while!!!!")
             level += 1
-        self.find_solution_path(index, algo="iterative-dfs")
-        self.closed = {}
-        return self.open
+        solution_path_length = self.find_solution_path(index, algo="iterative-dfs")
+        return solution_path_length
 
     def remove_redondant_nodes(self, head: Node):
         nodes = [head.left, head.right, head.up, head.down]
@@ -220,6 +190,7 @@ class TreeSearch:
 
     # we suppose all costs are = 1 so f(n) = h(n)
     def a_etoile(self, node: Node, heuristique):
+        self.closed = {}
         self.closed = {node.board.state.state_matrix_id_gen(): "root"}
         indice_min = heuristique(node.board.get_matrix_numbers())
         node.cost = 1
@@ -233,8 +204,8 @@ class TreeSearch:
         }
         while not self.open[indice_min][0]["node"].board.state.isFinal:
             head = self.open[indice_min][0]["node"]
-            print("board: ")
-            head.board.afficher_pieces()
+            # print("board: ")
+            # head.board.afficher_pieces()
             if head.board.state.isFinal:
                 break
             direction_states = self.remove_redondant_nodes(head)
@@ -257,14 +228,13 @@ class TreeSearch:
                     indice_min = indice_child
             while indice_min not in self.open:
                 indice_min += 1
-                print(indice_min)
-        print("taquin solved: ")
+                # print(indice_min)
+            # print("taquin solved: ")
         solution_path_length = self.find_solution_path(
             parent_id=self.open[indice_min][0]["parent"],
             solution_node=self.open[indice_min][0]["node"],
             algo="a-etoile"
         )
-        self.closed = {}
         return solution_path_length
 
     def heuristique_mahattan(self, matrix):
@@ -285,31 +255,3 @@ class TreeSearch:
                 if self.goal_dict.get(piece)[0] != i or self.goal_dict.get(piece)[1] != j:
                     sum += 1
         return sum
-
-    def a_etoile_compare(self, node: Node):
-        solution1 = self.a_etoile(node, heuristique=self.missplaced_pieces_heuristic)
-        res = self.algorithms_result["a-etoile"]
-        solution2 = self.a_etoile(node, heuristique=self.heuristique_mahattan)
-
-        print("heuristique places erronées solution length: ")
-        print(res)
-        # for str in solution1:
-        #     print(self.string_to_matrix(str))
-        print("==============================================")
-
-        print("heuristique manhattan solution length: ")
-        print(self.algorithms_result["a-etoile"])
-        # for str in solution2:
-        #     print(self.string_to_matrix(str))
-
-    def compare_algorithms(self):
-        min = self.algorithms_result["bfs"]
-        opt_name = "bfs"
-        for key in self.algorithms_result:
-            if self.algorithms_result[key] <= min:
-                min = self.algorithms_result[key]
-                opt_name = key
-            print("algorithm ", key, " found solution in", self.algorithms_result[key], "steps")
-
-        print("====================================================")
-        print(opt_name, " is the optimal algorithm.")
